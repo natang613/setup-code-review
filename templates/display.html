@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <title>Pull Requests</title>
+        <style type="text/css">
+            body{
+                margin: 15px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <table class="table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th>REPO NAME</th>
+                        <th>PR NUMBER</th>
+                        <th>STATUS</th>
+                        <th>AUTHOR</th>
+                        <th>CREATE DATE</th>
+                        <th>UPDATE DATE</th>
+                        <th>ASSIGNED TO</th>
+                        <th>REVIEWERS</th>
+                    </tr>
+                </thead>
+                <tbody id="display_body">
+
+                </tbody>
+            </table>
+        </div>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $.ajax({
+                    method: "GET",
+                    url: "/hooks",
+                }).done(function(response){
+                    pr_list = response;
+                    for(const key of Object.keys(pr_list)){
+                        tr = "<tr>";
+                        tr += "<td>";
+                        tr += pr_list[key]["repo"];
+                        tr += "</td>";
+                        tr += "<td>";
+                        tr += key;
+                        tr += "</td>";
+                        tr += "<td>";
+                        tr += pr_list[key]["status"];
+                        tr += "</td>";
+                        tr += "<td>";
+                        tr += pr_list[key]["author"];
+                        tr += "</td>";
+                        tr += "<td>";
+                        tr += pr_list[key]["created_at"];
+                        tr += "</td>";
+                        tr += "<td>";
+                        tr += pr_list[key]["updated_at"];
+                        tr += "</td>";
+                        tr += "<td>";
+                        tr += pr_list[key]["assignees"];
+                        tr += "</td>";
+                        tr += "<td>";
+                        tr += pr_list[key]["requested_reviewers"];
+                        tr += "</td>";
+                        tr += "<tr>";
+                        $("#display_body").append(tr);
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
