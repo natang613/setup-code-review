@@ -67,26 +67,27 @@ def pull_requests():
     if request.method == "POST":
         data = request.json
         if "pull_request" in data:
-
-            url_address = upload_image_of_pr(data["pull_request"]["html_url"])
-            data_to_store = {}
-            pr_number = data["number"]
-            repo_name = data["pull_request"]["base"]["repo"]["full_name"]
-            action = data["action"]
-            if action != "opened" and action != "closed":
-                action = "opened"
-            data_to_store["url"] = url_address
-            data_to_store["status"] = action
-            data_to_store["author"] = data["pull_request"]["base"]["user"]["login"]
-            data_to_store["created_at"] = str(data["pull_request"]["created_at"]).replace("T", " ").replace("Z", "")
-            data_to_store["updated_at"] = str(data["pull_request"]["updated_at"]).replace("T", " ").replace("Z", "")
-            data_to_store["assignees"] = ",".join([x["login"] for x in data["pull_request"]["assignees"]])
-            data_to_store["requested_reviewers"] = ",".join(
-                [x["login"] for x in data["pull_request"]["requested_reviewers"]])
-            data_to_store["repo"] = repo_name
-            ref = db.reference("/" + str(repo_name) + "/" + (str(pr_number)))
-            ref.set(data_to_store)
-
+            try:
+                url_address = upload_image_of_pr(data["pull_request"]["html_url"])
+                data_to_store = {}
+                pr_number = data["number"]
+                repo_name = data["pull_request"]["base"]["repo"]["full_name"]
+                action = data["action"]
+                if action != "opened" and action != "closed":
+                    action = "opened"
+                data_to_store["url"] = url_address
+                data_to_store["status"] = action
+                data_to_store["author"] = data["pull_request"]["base"]["user"]["login"]
+                data_to_store["created_at"] = str(data["pull_request"]["created_at"]).replace("T", " ").replace("Z", "")
+                data_to_store["updated_at"] = str(data["pull_request"]["updated_at"]).replace("T", " ").replace("Z", "")
+                data_to_store["assignees"] = ",".join([x["login"] for x in data["pull_request"]["assignees"]])
+                data_to_store["requested_reviewers"] = ",".join(
+                    [x["login"] for x in data["pull_request"]["requested_reviewers"]])
+                data_to_store["repo"] = repo_name
+                ref = db.reference("/" + str(repo_name) + "/" + (str(pr_number)))
+                ref.set(data_to_store)
+            except:  # checking that this is the right format and in order that the server should not crash
+                return ""
     else:
         try:
             ref = db.reference("/")
