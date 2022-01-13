@@ -1,74 +1,92 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <!-- Latest compiled and minified CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-        <title>Pull Requests</title>
-        <style type="text/css">
-            body{
-                margin: 15px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <table class="table table-hover table-bordered">
-                <thead>
-                    <tr>
-                        <th>REPO NAME</th>
-                        <th>PR NUMBER</th>
-                        <th>STATUS</th>
-                        <th>AUTHOR</th>
-                        <th>CREATE DATE</th>
-                        <th>UPDATE DATE</th>
-                        <th>ASSIGNED TO</th>
-                        <th>REVIEWERS</th>
-                    </tr>
-                </thead>
-                <tbody id="display_body">
+<head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <title>Pull Requests</title>
+    <style type="text/css">
+        body {
+            margin: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <table class="table table-hover table-bordered">
+        <thead>
+        <tr>
+            <th>REPO NAME</th>
+            <th>PR NUMBER</th>
+            <th>STATUS</th>
+            <th>AUTHOR</th>
+            <th>CREATE DATE</th>
+            <th>UPDATE DATE</th>
+            <th>ASSIGNED TO</th>
+            <th>REVIEWERS</th>
+            <th>IMAGE</th>
+        </tr>
+        </thead>
+        <tbody id="display_body">
 
-                </tbody>
-            </table>
-        </div>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
-        <script type="text/javascript">
-            $(document).ready(function(){
-                $.ajax({
-                    method: "GET",
-                    url: "/hooks",
-                }).done(function(response){
-                    pr_list = response;
-                    for(const key of Object.keys(pr_list)){
+        </tbody>
+    </table>
+</div>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.ajax({
+            method: "GET",
+            url: "/hooks",
+        }).done(function (response) {
+            pr_list = response;
+            var counter = 0;
+            for (const userName of Object.keys(pr_list)) {
+                for (const repoName of Object.keys(pr_list[userName])) {
+                    for (const pullNumber of Object.keys(pr_list[userName][repoName])) {
                         tr = "<tr>";
                         tr += "<td>";
-                        tr += pr_list[key]["repo"];
+                        tr += pr_list[userName][repoName][pullNumber]["repo"];
                         tr += "</td>";
                         tr += "<td>";
-                        tr += key;
+                        tr += pullNumber;
                         tr += "</td>";
                         tr += "<td>";
-                        tr += pr_list[key]["status"];
+                        tr += pr_list[userName][repoName][pullNumber]["status"];
                         tr += "</td>";
                         tr += "<td>";
-                        tr += pr_list[key]["author"];
+                        tr += pr_list[userName][repoName][pullNumber]["author"];
                         tr += "</td>";
                         tr += "<td>";
-                        tr += pr_list[key]["created_at"];
+                        tr += pr_list[userName][repoName][pullNumber]["created_at"];
                         tr += "</td>";
                         tr += "<td>";
-                        tr += pr_list[key]["updated_at"];
+                        tr += pr_list[userName][repoName][pullNumber]["updated_at"];
                         tr += "</td>";
                         tr += "<td>";
-                        tr += pr_list[key]["assignees"];
+                        tr += pr_list[userName][repoName][pullNumber]["assignees"];
                         tr += "</td>";
                         tr += "<td>";
-                        tr += pr_list[key]["requested_reviewers"];
-                        tr += "</td>";
-                        tr += "<tr>";
+                        tr += pr_list[userName][repoName][pullNumber]["requested_reviewers"];
                         $("#display_body").append(tr);
+                        displayResult(counter, pr_list[userName][repoName][pullNumber]["url"]);
+                        counter = counter + 1;
                     }
-                });
-            });
-        </script>
-    </body>
+                }
+            }
+        });
+    });
+
+    function displayResult(counter, url) {
+
+        var firstRow = document.getElementById("display_body").rows[counter];
+        var x = firstRow.insertCell(-1);
+        var img = document.createElement('img');
+        img.src = url;
+        img.height = 40;
+        x.appendChild(img);
+
+    }
+</script>
+</body>
 </html>
